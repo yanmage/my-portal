@@ -19,7 +19,7 @@ body {
 
 /* ── Header ── */
 .header {
-  background: #0f1f3d;
+  background: #ffffff;
   padding: 0 40px;
   height: 64px;
   display: flex;
@@ -28,7 +28,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 1px 0 #e7e5e4, 0 2px 8px rgba(0,0,0,0.06);
+  border-bottom: 1px solid #e7e5e4;
 }
 
 .logo {
@@ -38,11 +39,11 @@ body {
 }
 
 .header-text .title {
-  font-size: 15px; font-weight: 600; color: #f0f4ff;
+  font-size: 15px; font-weight: 600; color: #1c1917;
   letter-spacing: 0.02em;
 }
 .header-text .sub {
-  font-size: 10px; color: #6b82a8; letter-spacing: 0.05em; margin-top: 1px;
+  font-size: 10px; color: #a8a29e; letter-spacing: 0.05em; margin-top: 1px;
 }
 
 .header-right {
@@ -50,10 +51,10 @@ body {
   text-align: right;
 }
 .header-right .date {
-  font-size: 10px; color: #6b82a8;
+  font-size: 10px; color: #a8a29e;
 }
 .header-right .time {
-  font-size: 21px; font-weight: 300; color: #c8d8f0;
+  font-size: 21px; font-weight: 300; color: #1c1917;
   letter-spacing: 0.04em;
   line-height: 1.1;
 }
@@ -338,10 +339,11 @@ body {
       <input class="input-field" id="research-name" placeholder="氏名（例：山田 太郎）" />
       <input class="input-field" id="research-company" placeholder="会社名（例：NSD 株式会社）" />
       <button class="research-btn" onclick="startResearch()">🔍 &nbsp;リサーチ開始</button>
-      <div class="research-hint" style="margin-top:12px;">
-        ① SNS（LinkedIn・X・Facebook）検索<br>
-        ② Google Drive 商談メモ検索（2フォルダ）<br>
-        <span style="color:#c4bfb8;">→ 合計3タブを同時に開きます</span>
+
+      <div style="margin-top:14px;padding:12px 14px;background:#faf8f5;border-left:3px solid #e7e5e4;font-size:11px;color:#a8a29e;line-height:1.8;">
+        ① <strong style="color:#292524;">Claude.ai</strong> が開き、SNS（LinkedIn・X・Facebook）を調べてサマリーを生成<br>
+        ② <strong style="color:#292524;">商談メモ</strong> フォルダ①②を同時に開きます<br>
+        <span style="color:#c4bfb8;">→ 合計3タブが開きます</span>
       </div>
     </div>
   </div>
@@ -786,37 +788,30 @@ function switchVietnamTab(tab) {
   }
 }
 
-// Research
+// ── 人物リサーチ（Claude.ai + Drive方式） ──
 function startResearch() {
-  const name = document.getElementById('research-name').value.trim()
+  const name    = document.getElementById('research-name').value.trim()
   const company = document.getElementById('research-company').value.trim()
   if (!name || !company) { alert('氏名と会社名を入力してください'); return }
 
-  // ① SNS検索（Google経由）
-  const snsQ = encodeURIComponent(`${name} ${company} site:linkedin.com OR site:x.com OR site:facebook.com`)
-  window.open(`https://www.google.com/search?q=${snsQ}`, '_blank')
+  // ① Claude.aiをプロンプト付きで開く（SNSサマリー生成）
+  const prompt = encodeURIComponent(
+    `【人物リサーチ】打ち合わせ前の事前調査をお願いします。\n\n対象：${name}（${company}）\n\n以下を調べてまとめてください：\n1. LinkedIn プロフィール（役職・経歴・スキル）\n2. X（Twitter）の発信傾向・関心トピック\n3. Facebook の公開情報\n4. その他Web上の登壇・インタビュー・記事情報\n\n【出力形式】\n■ プロフィール概要\n■ SNS別サマリー（LinkedIn / X / Facebook）\n■ 打ち合わせで使えるトークポイント（3つ）\n■ 注意点・NG話題`
+  )
+  window.open(`https://claude.ai/new?q=${prompt}`, '_blank')
 
-  // ② 商談メモ検索（Google Drive 2フォルダ）
+  // ② 商談メモ フォルダ① を開く
   const driveQ = encodeURIComponent(`${name} ${company}`)
   setTimeout(() => {
     window.open(`https://drive.google.com/drive/folders/1VaGV5Hfm0HwArcdGatLEOd_iwq61V0Ha/search?q=${driveQ}`, '_blank')
-  }, 300)
+  }, 400)
+
+  // ③ 商談メモ フォルダ② を開く
   setTimeout(() => {
     window.open(`https://drive.google.com/drive/folders/1Haa1ilrql17oPJ_OEpbOkDwwgtZsJUIO/search?q=${driveQ}`, '_blank')
-  }, 600)
+  }, 800)
 }
 
-// 商談メモ検索（Google Drive）
-async function searchMemos() {
-  const name    = document.getElementById('research-name').value.trim()
-  const company = document.getElementById('research-company').value.trim()
-  const results = document.getElementById('memo-results')
-  const btn     = document.getElementById('memo-search-btn')
-
-  if (!name && !company) {
-    results.innerHTML = '<span style="color:#e85d04">氏名または会社名を入力してください。</span>'
-    return
-  }
 
   btn.textContent = '検索中…'
   btn.disabled = true
