@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portal — GMO Runsystem</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+  background: #f4f2ee;
+  color: #1c1917;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  background: #0f1f3d;
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+
+.logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.header-text .title {
+  font-size: 15px; font-weight: 600; color: #f0f4ff;
+  letter-spacing: 0.02em;
+}
+.header-text .sub {
+  font-size: 10px; color: #6b82a8; letter-spacing: 0.05em; margin-top: 1px;
+}
+
+.header-right {
+  margin-left: auto;
+  text-align: right;
+}
+.header-right .date {
+  font-size: 10px; color: #6b82a8;
+}
+.header-right .time {
+  font-size: 21px; font-weight: 300; color: #c8d8f0;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 28px 40px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.card-head {
+  background: #0f1f3d;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.card-head-icon { font-size: 20px; }
+.card-head-title {
+  font-size: 22px; font-weight: 600; color: #c8d8f0;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+.card-body {
+  padding: 20px 20px 18px;
+}
+
+/* ── Drive Links ── */
+.link-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid #f0ede8;
+  cursor: pointer;
+  transition: color 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.link-row:last-of-type { border-bottom: none; }
+.link-row:hover .link-label { color: #e85d04; }
+.link-icon { font-size: 16px; flex-shrink: 0; }
+.link-label {
+  font-size: 13px; color: #292524; flex: 1;
+  font-weight: 400; transition: color 0.15s;
+}
+.link-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 3px;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.badge-sales   { background: #e85d0412; color: #c2410c; }
+.badge-proposal{ background: #7c3aed12; color: #6d28d9; }
+.badge-quote   { background: #05966912; color: #047857; }
+.badge-contract{ background: #92400e12; color: #92400e; }
+
+.add-btn {
+  display: block; width: 100%; margin-top: 14px;
+  padding: 9px; background: #0f1f3d; color: #c8d8f0;
+  border: none; font-family: inherit; font-size: 11px;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; border-radius: 3px; transition: background 0.15s;
+}
+.add-btn:hover { background: #1a3460; }
+
+/* ── RFP Launcher ── */
+.scenario-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #f0ede8;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.scenario-row:last-of-type { border-bottom: none; }
+.scenario-row:hover .scenario-name { color: #e85d04; }
+.scenario-icon { font-size: 20px; flex-shrink: 0; }
+.scenario-name {
+  font-size: 13px; color: #292524; font-weight: 500;
+  transition: color 0.15s;
+}
+.scenario-desc { font-size: 10px; color: #a8a29e; margin-top: 2px; }
+
+.persona-row {
+  display: flex; gap: 6px; margin: 14px 0 16px;
+}
+.persona-btn {
+  flex: 1; padding: 7px 4px; border-radius: 3px; font-size: 10px;
+  font-weight: 700; letter-spacing: 0.04em; font-family: inherit;
+  border: 1px solid #e7e5e4; background: #fafaf9; color: #78716c;
+  cursor: pointer; transition: all 0.15s;
+}
+.persona-btn.selected {
+  background: #0f1f3d; color: #c8d8f0; border-color: #0f1f3d;
+}
+.persona-btn:hover:not(.selected) { border-color: #0f1f3d; color: #0f1f3d; }
+
+.launch-btn {
+  width: 100%; padding: 11px;
+  background: #e85d04; color: #fff;
+  border: none; font-family: inherit; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; border-radius: 3px; transition: background 0.15s;
+}
+.launch-btn:hover { background: #c2410c; }
+.launch-btn:disabled {
+  background: #e7e5e4; color: #a8a29e; cursor: not-allowed;
+}
+
+/* ── Research ── */
+.input-field {
+  display: block; width: 100%;
+  border: none; border-bottom: 2px solid #e7e5e4;
+  background: transparent; color: #1c1917;
+  font-size: 13px; font-family: inherit;
+  padding: 8px 0; margin-bottom: 16px; outline: none;
+  transition: border-color 0.2s;
+}
+.input-field:focus { border-bottom-color: #e85d04; }
+.input-field::placeholder { color: #c4bfb8; }
+
+.research-btn {
+  width: 100%; padding: 11px;
+  background: #0f1f3d; color: #c8d8f0;
+  border: none; font-family: inherit; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; border-radius: 3px; transition: background 0.15s;
+}
+.research-btn:hover { background: #1a3460; }
+.research-hint {
+  margin-top: 14px; padding: 10px 14px;
+  background: #faf8f5; border-left: 3px solid #e7e5e4;
+  font-size: 11px; color: #a8a29e; line-height: 1.7;
+}
+
+/* ── Agents (B案: ダーク) ── */
+.agent-card-inner {
+  background: #1c1917;
+  margin: -18px;
+  padding: 18px;
+}
+.agent-summary {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 8px; margin-bottom: 16px;
+}
+.agent-summary-stat {
+  background: #292524; border: 1px solid #3a3533;
+  border-radius: 4px; padding: 10px 8px; text-align: center;
+}
+.agent-summary-stat .num { font-size: 22px; font-weight: 700; line-height: 1; }
+.agent-summary-stat .lbl { font-size: 9px; color: #78716c; margin-top: 3px; letter-spacing: 0.06em; }
+.agent-summary-stat.ok .num { color: #34d399; }
+.agent-summary-stat.ng .num { color: #f87171; }
+.agent-summary-stat.tt .num { color: #a8a29e; }
+.refresh-btn {
+  font-size: 10px; color: #57534e; background: none; border: none;
+  cursor: pointer; font-family: inherit; transition: color 0.15s; float: right; margin-bottom: 8px;
+}
+.refresh-btn:hover { color: #a8a29e; }
+
+.agent-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; margin-bottom: 6px;
+  background: #292524; border: 1px solid #3a3533; border-radius: 4px;
+}
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; position: relative;
+}
+.status-dot.on  { background: #34d399; }
+.status-dot.off { background: #52525b; }
+.status-dot.on::after {
+  content: ''; position: absolute; top: -3px; left: -3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #34d39933;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.6); }
+}
+
+.agent-name  { font-size: 12px; color: #d4d4d4; font-weight: 600; }
+.agent-desc  { font-size: 10px; color: #57534e; margin-top: 2px; }
+.agent-status {
+  font-size: 10px; font-weight: 700; margin-left: auto;
+  letter-spacing: 0.06em;
+}
+.agent-status.on  { color: #34d399; }
+.agent-status.off { color: #52525b; }
+
+.last-checked {
+  margin-top: 10px; font-size: 10px; color: #3a3533;
+  text-align: right; letter-spacing: 0.04em;
+}
+
+/* ── Vietnam (B案: ノート風) ── */
+.vietnam-notebook {
+  background: #fffef5;
+  background-image: repeating-linear-gradient(transparent, transparent 27px, #e7e5d8 27px, #e7e5d8 28px);
+  padding: 10px 14px 10px 18px; margin-bottom: 14px;
+  border-left: 4px solid #d97706; border-radius: 2px;
+  font-size: 11px; color: #78716c; line-height: 28px;
+}
+.vietnam-check-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-bottom: 1px dashed #e7e5d8;
+  cursor: pointer; font-size: 12px; color: #44403c; font-family: inherit;
+  background: none; border-top: none; border-left: none; border-right: none;
+  width: 100%; text-align: left;
+}
+.vietnam-check-item input[type=checkbox] { accent-color: #d97706; width: 14px; height: 14px; flex-shrink: 0; }
+.vietnam-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 2px; letter-spacing: 0.05em;
+}
+.vietnam-input {
+  width: 100%; border: none; border-bottom: 2px solid #d97706;
+  background: transparent; font-size: 12px; font-family: inherit;
+  padding: 7px 0; margin: 6px 0 14px; outline: none; color: #292524;
+}
+.vietnam-input::placeholder { color: #c4bfb8; }
+.vietnam-gen-btn {
+  width: 100%; padding: 11px; background: #1c1917; color: #fef3c7;
+  border: none; font-family: inherit; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border-radius: 3px;
+  transition: background 0.15s;
+}
+.vietnam-gen-btn:hover { background: #292524; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <img src="data:image/png;base64,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" alt="GMO RUNSYSTEM" style="height:30px;width:auto;">
+  </div>
+  <div class="header-text">
+    <div class="sub">営業支援ダッシュボード</div>
+  </div>
+  <div class="header-right">
+    <div class="date" id="date-str"></div>
+    <div class="time" id="time-str"></div>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- ① 関連リンク（左上） -->
+  <div class="card">
+    <div class="card-head" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span class="card-head-icon">☁️</span>
+        <span class="card-head-title">関連リンク</span>
+      </div>
+      <button onclick="toggleDriveEdit()" id="drive-edit-btn" style="background:rgba(255,255,255,0.12);border:none;color:#c8d8f0;font-size:11px;font-weight:600;padding:4px 10px;border-radius:3px;cursor:pointer;letter-spacing:0.05em;">✏️ 編集</button>
+    </div>
+    <div class="card-body" id="drive-card-body">
+      <!-- 動的に描画 -->
+    </div>
+  </div>
+
+  <!-- ② 人物リサーチ（右上） -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-icon">🔍</span>
+      <span class="card-head-title">人物リサーチ</span>
+    </div>
+    <div class="card-body">
+      <input class="input-field" id="research-name" placeholder="氏名（例：山田 太郎）" />
+      <input class="input-field" id="research-company" placeholder="会社名（例：NSD 株式会社）" />
+      <button class="research-btn" onclick="startResearch()">🔍 &nbsp;リサーチ開始</button>
+      <div class="research-hint" style="margin-top:12px;">
+        ① SNS（LinkedIn・X・Facebook）検索<br>
+        ② Google Drive 商談メモ検索（2フォルダ）<br>
+        <span style="color:#c4bfb8;">→ 合計3タブを同時に開きます</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ エージェント稼働状況（左下・B案ダーク） -->
+  <div class="card" style="background:#1c1917;">
+    <div class="card-head" style="background:#292524;border-bottom:1px solid #3a3533;">
+      <span class="card-head-icon">🤖</span>
+      <span class="card-head-title" style="color:#e7e5e4;">エージェント稼働状況</span>
+    </div>
+    <div class="card-body" style="background:#1c1917;">
+      <button class="refresh-btn" onclick="this.textContent='確認中…'; setTimeout(()=>this.textContent='↻ 更新',1200)">↻ 更新</button>
+      <div class="agent-summary">
+        <div class="agent-summary-stat ok"><div class="num">2</div><div class="lbl">稼働中</div></div>
+        <div class="agent-summary-stat ng"><div class="num">1</div><div class="lbl">停止</div></div>
+        <div class="agent-summary-stat tt"><div class="num">3</div><div class="lbl">合計</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="status-dot on"></div>
+        <div>
+          <div class="agent-name">フォローアップエージェント</div>
+          <div class="agent-desc">Obsidian メモ → フォロー候補抽出</div>
+        </div>
+        <span class="agent-status on">ON</span>
+      </div>
+      <div class="agent-row">
+        <div class="status-dot on"></div>
+        <div>
+          <div class="agent-name">ドライブ監視エージェント</div>
+          <div class="agent-desc">Google Drive 更新検知</div>
+        </div>
+        <span class="agent-status on">ON</span>
+      </div>
+      <div class="agent-row">
+        <div class="status-dot off"></div>
+        <div>
+          <div class="agent-name">案件 AI エージェント</div>
+          <div class="agent-desc">Next.js :3100</div>
+        </div>
+        <span class="agent-status off">OFF</span>
+      </div>
+      <div class="last-checked" id="last-checked">最終確認: —</div>
+
+      <!-- アイデアメモ -->
+      <div style="margin-top:18px;border-top:1px solid #3a3533;padding-top:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:700;color:#57534e;letter-spacing:0.08em;text-transform:uppercase;">💡 作成候補エージェント</div>
+          <button onclick="addAgentIdea()" style="background:#3a3533;border:none;color:#a8a29e;font-size:11px;padding:3px 10px;border-radius:3px;cursor:pointer;font-family:inherit;">＋ 追加</button>
+        </div>
+        <div id="agent-ideas-list"></div>
+        <div id="agent-idea-form" style="display:none;margin-top:8px;">
+          <input id="agent-idea-input" placeholder="例：Slack未読アラートエージェント" style="width:100%;background:#292524;border:1px solid #52525b;border-radius:3px;color:#d4d4d4;font-size:12px;padding:8px 10px;outline:none;font-family:inherit;margin-bottom:6px;">
+          <div style="display:flex;gap:6px;">
+            <button onclick="saveAgentIdea()" style="flex:1;padding:7px;background:#34d399;color:#064e3b;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">保存</button>
+            <button onclick="cancelAgentIdea()" style="flex:1;padding:7px;background:#3a3533;color:#78716c;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">キャンセル</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ ベトナム視察（右下・B案ノート風） -->
+  <div class="card">
+    <div class="card-head" style="background:#1c1917;border-bottom:1px solid #3a3533;">
+      <span class="card-head-icon">✈️</span>
+      <span class="card-head-title" style="color:#e7e5e4;">ベトナム視察</span>
+    </div>
+    <div class="card-body" style="background:#fffef5;">
+
+      <!-- スケジュール編集リンク -->
+      <a href="https://docs.google.com/spreadsheets/d/193D4H8mCfiL9BCaR7mnW6ZaNTVxMP4Lz/edit" target="_blank"
+        style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:10px 12px;background:#1c1917;border-radius:3px;text-decoration:none;">
+        <span style="font-size:14px;">📊</span>
+        <span style="font-size:11px;font-weight:700;color:#fef3c7;">スケジュール編集（元ファイルを開く）↗</span>
+      </a>
+
+      <!-- 3都市ガイド -->
+      <div style="font-size:10px;font-weight:700;color:#92400e;letter-spacing:0.06em;margin-bottom:10px;">▼ 都市ガイド</div>
+
+      <a href="https://www.google.com/search?q=ハノイ+観光+ガイド" target="_blank" class="vietnam-check-item" style="text-decoration:none;color:#292524;">
+        <span class="vietnam-tag" style="background:#fef3c7;color:#92400e;">🏙</span>
+        ハノイ Guide ↗
+      </a>
+      <a href="https://www.google.com/search?q=ホーチミン+観光+ガイド" target="_blank" class="vietnam-check-item" style="text-decoration:none;color:#292524;">
+        <span class="vietnam-tag" style="background:#d1fae5;color:#065f46;">🌆</span>
+        ホーチミン Guide ↗
+      </a>
+      <a href="https://www.google.com/search?q=ダナン+観光+ガイド" target="_blank" class="vietnam-check-item" style="text-decoration:none;color:#292524;border-bottom:none;">
+        <span class="vietnam-tag" style="background:#dbeafe;color:#1e40af;">🏖</span>
+        ダナン Guide ↗
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ⑤ 見積作成（左下段・縦長） -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-icon">✦</span>
+      <span class="card-head-title">見積作成</span>
+    </div>
+    <div class="card-body">
+      <a class="link-row" href="https://claude.ai/projects" target="_blank">
+        <span class="link-icon">💴</span>
+        <span class="link-label">見積書作成 ↗</span>
+        <span class="link-badge" style="background:#e85d0412;color:#c2410c">5月1日</span>
+      </a>
+      <a class="link-row" href="https://claude.ai/projects" target="_blank">
+        <span class="link-icon">🔬</span>
+        <span class="link-label">4. 技術深掘り ↗</span>
+        <span class="link-badge" style="background:#1a3c8f12;color:#1a3c8f">3月26日</span>
+      </a>
+      <a class="link-row" href="https://claude.ai/projects" target="_blank">
+        <span class="link-icon">🎨</span>
+        <span class="link-label">3. モックアップ ↗</span>
+        <span class="link-badge" style="background:#1a3c8f12;color:#1a3c8f">3月26日</span>
+      </a>
+      <a class="link-row" href="https://claude.ai/projects" target="_blank">
+        <span class="link-icon">📋</span>
+        <span class="link-label">2. 提案書作成 ↗</span>
+        <span class="link-badge" style="background:#1a3c8f12;color:#1a3c8f">3月26日</span>
+      </a>
+      <a class="link-row" href="https://claude.ai/projects" target="_blank">
+        <span class="link-icon">🔍</span>
+        <span class="link-label">1. 案件分析 ↗</span>
+        <span class="link-badge" style="background:#1a3c8f12;color:#1a3c8f">3月26日</span>
+      </a>
+      <a class="link-row" href="https://claude.ai/projects" target="_blank" style="padding-top:12px;margin-top:4px;border-top:1px solid #f0ede8;">
+        <span class="link-icon">＋</span>
+        <span class="link-label" style="color:#a8a29e">すべてのプロジェクトを見る ↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ⑥ RFP 想定問答集（右下段・API不要版） -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-icon">💬</span>
+      <span class="card-head-title">RFP 想定問答集</span>
+    </div>
+    <div class="card-body">
+
+      <!-- Step 1: 立場選択 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;color:#78716c;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">① 自社の立場</div>
+        <div style="display:flex;gap:6px;">
+          <button class="persona-btn selected" onclick="selectPersona(this)">提案側（GMO）</button>
+          <button class="persona-btn" onclick="selectPersona(this)">受注側（SIer）</button>
+          <button class="persona-btn" onclick="selectPersona(this)">中立</button>
+        </div>
+      </div>
+
+      <!-- Step 2: 重点領域 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;color:#78716c;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">② 重点領域（任意）</div>
+        <input class="input-field" id="rfp-focus" placeholder="例：コスト・納期・技術力・体制" />
+      </div>
+
+      <!-- Step 3: RFP内容メモ -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;color:#78716c;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">③ RFPの要点をメモ（任意）</div>
+        <textarea id="rfp-memo" placeholder="例：3月末までにシステム移行・予算5000万・Java8からの移行..." style="width:100%;height:80px;padding:8px 10px;border:none;border-bottom:2px solid #e7e5e4;background:#fafaf9;font-size:12px;font-family:inherit;color:#292524;resize:none;outline:none;border-radius:3px 3px 0 0;" onfocus="this.style.borderBottomColor='#0f1f3d'" onblur="this.style.borderBottomColor='#e7e5e4'"></textarea>
+      </div>
+
+      <!-- 起動ボタン -->
+      <button class="launch-btn" onclick="launchRfpQA()">💬 Claude で想定問答集を作成</button>
+
+      <div style="margin-top:10px;font-size:10px;color:#a8a29e;line-height:1.7;">
+        Claude.ai が新しいタブで開きます。<br>RFPファイルはそちらでアップロードしてください。
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Drive Links 管理 ──
+const BADGE_CLASSES = {
+  '営業': 'badge-sales', '提案': 'badge-proposal',
+  '見積': 'badge-quote', '契約': 'badge-contract'
+}
+const BADGE_COLORS = {
+  '営業': {bg:'#e85d0412',color:'#c2410c'},
+  '提案': {bg:'#7c3aed12',color:'#6d28d9'},
+  '見積': {bg:'#05966912',color:'#047857'},
+  '契約': {bg:'#92400e12',color:'#92400e'},
+  '商談': {bg:'#0f1f3d18',color:'#1a3c8f'},
+  'ツール': {bg:'#0ea5e912',color:'#0369a1'},
+  'その他': {bg:'#1a3c8f12',color:'#1a3c8f'},
+}
+
+let driveLinks = JSON.parse(localStorage.getItem('driveLinks') || 'null')
+// 商談メモが含まれていた古いキャッシュをリセット
+if (driveLinks && driveLinks.some(l => l.label && l.label.includes('商談メモ'))) {
+  localStorage.removeItem('driveLinks')
+  driveLinks = null
+}
+driveLinks = driveLinks || [
+  { id:1, icon:'✍️', label:'GMO サイン', url:'https://gmosign.com/', cat:'ツール' },
+  { id:2, icon:'⭐', label:'X ポイント', url:'https://xpoint.jp/', cat:'ツール' },
+  { id:3, icon:'📊', label:'Migraty 提案資料', url:'#', cat:'提案' },
+  { id:4, icon:'💴', label:'見積書テンプレート', url:'#', cat:'見積' },
+  { id:5, icon:'📝', label:'NDA・契約書フォルダ', url:'#', cat:'契約' },
+]
+let driveEditMode = false
+let editingId = null
+
+function saveDriveLinks() {
+  localStorage.setItem('driveLinks', JSON.stringify(driveLinks))
+}
+
+function renderDriveCard() {
+  const body = document.getElementById('drive-card-body')
+  if (!body) return
+  const btn = document.getElementById('drive-edit-btn')
+
+  if (!driveEditMode) {
+    // 通常表示
+    btn.textContent = '✏️ 編集'
+    body.innerHTML = driveLinks.map(l => {
+      const c = BADGE_COLORS[l.cat] || BADGE_COLORS['その他']
+      return `<a class="link-row" href="${l.url}" target="_blank" ${l.url==='#'?'onclick="return false"':''}>
+        <span class="link-icon">${l.icon}</span>
+        <span class="link-label">${l.label} ↗</span>
+        <span class="link-badge" style="background:${c.bg};color:${c.color}">${l.cat}</span>
+      </a>`
+    }).join('') + `<button class="add-btn" onclick="addDriveLink()">＋ リンクを追加</button>`
+  } else {
+    // 編集モード
+    btn.textContent = '✅ 完了'
+    body.innerHTML = `
+      <div style="font-size:10px;color:#a8a29e;margin-bottom:10px;letter-spacing:0.05em;">URLをクリックして編集 / ✕で削除</div>
+      ${driveLinks.map(l => {
+        const c = BADGE_COLORS[l.cat] || BADGE_COLORS['その他']
+        if (editingId === l.id) {
+          return `<div style="padding:10px;margin-bottom:8px;background:#faf8f5;border:1px solid #e7e5e4;border-radius:4px;">
+            <div style="display:flex;gap:6px;margin-bottom:6px;">
+              <input id="edit-icon" value="${l.icon}" style="width:40px;padding:5px;border:1px solid #e7e5e4;border-radius:3px;font-size:14px;text-align:center;">
+              <input id="edit-label" value="${l.label}" style="flex:1;padding:5px 8px;border:1px solid #e7e5e4;border-radius:3px;font-size:12px;">
+              <select id="edit-cat" style="padding:5px;border:1px solid #e7e5e4;border-radius:3px;font-size:12px;">
+                ${['営業','提案','見積','契約','その他'].map(c=>`<option ${c===l.cat?'selected':''}>${c}</option>`).join('')}
+              </select>
+            </div>
+            <input id="edit-url" value="${l.url}" placeholder="Google Drive URL" style="width:100%;padding:6px 8px;border:1px solid #e7e5e4;border-radius:3px;font-size:11px;margin-bottom:8px;">
+            <div style="display:flex;gap:6px;">
+              <button onclick="saveEdit(${l.id})" style="flex:1;padding:7px;background:#0f1f3d;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;">保存</button>
+              <button onclick="cancelEdit()" style="flex:1;padding:7px;background:#f0ede8;color:#78716c;border:none;border-radius:3px;font-size:11px;cursor:pointer;">キャンセル</button>
+            </div>
+          </div>`
+        }
+        return `<div class="link-row" style="cursor:default;">
+          <span class="link-icon">${l.icon}</span>
+          <span class="link-label" style="flex:1;">${l.label}</span>
+          <span style="font-size:10px;color:#a8a29e;margin-right:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.url==='#'?'URL未設定':l.url.replace('https://','')}</span>
+          <button onclick="startEdit(${l.id})" style="background:#f0ede8;border:none;padding:3px 8px;border-radius:3px;font-size:11px;cursor:pointer;margin-right:4px;">✏️</button>
+          <button onclick="deleteLink(${l.id})" style="background:#fee2e2;border:none;padding:3px 8px;border-radius:3px;font-size:11px;cursor:pointer;color:#dc2626;">✕</button>
+        </div>`
+      }).join('')}
+      <button class="add-btn" onclick="addDriveLink()" style="margin-top:8px;">＋ リンクを追加</button>
+    `
+  }
+}
+
+function toggleDriveEdit() {
+  driveEditMode = !driveEditMode
+  editingId = null
+  renderDriveCard()
+}
+
+function startEdit(id) {
+  editingId = id
+  renderDriveCard()
+}
+
+function saveEdit(id) {
+  const icon  = document.getElementById('edit-icon').value.trim() || '🔗'
+  const label = document.getElementById('edit-label').value.trim()
+  const url   = document.getElementById('edit-url').value.trim() || '#'
+  const cat   = document.getElementById('edit-cat').value
+  driveLinks = driveLinks.map(l => l.id===id ? {...l, icon, label, url, cat} : l)
+  editingId = null
+  saveDriveLinks()
+  renderDriveCard()
+}
+
+function cancelEdit() {
+  editingId = null
+  renderDriveCard()
+}
+
+function deleteLink(id) {
+  if (!confirm('このリンクを削除しますか？')) return
+  driveLinks = driveLinks.filter(l => l.id !== id)
+  saveDriveLinks()
+  renderDriveCard()
+}
+
+function addDriveLink() {
+  const newId = Date.now()
+  driveLinks.push({ id:newId, icon:'🔗', label:'新しいリンク', url:'#', cat:'営業' })
+  driveEditMode = true
+  editingId = newId
+  saveDriveLinks()
+  renderDriveCard()
+}
+
+// Clock
+function updateClock() {
+  const now = new Date()
+  document.getElementById('date-str').textContent =
+    now.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' })
+  document.getElementById('time-str').textContent =
+    now.toLocaleTimeString('ja-JP', { hour:'2-digit', minute:'2-digit' })
+}
+updateClock()
+setInterval(updateClock, 10000)
+
+// Drive初期描画
+renderDriveCard()
+
+// ── エージェントアイデアメモ ──
+let agentIdeas = JSON.parse(localStorage.getItem('agentIdeas') || '[]')
+
+const IDEA_STATUSES = ['💡 アイデア', '🔧 検討中', '✅ 完成']
+
+function saveAgentIdeas() {
+  localStorage.setItem('agentIdeas', JSON.stringify(agentIdeas))
+}
+
+function renderAgentIdeas() {
+  const list = document.getElementById('agent-ideas-list')
+  if (!list) return
+  if (agentIdeas.length === 0) {
+    list.innerHTML = `<div style="font-size:11px;color:#3a3533;padding:8px 0;text-align:center;">まだアイデアがありません</div>`
+    return
+  }
+  list.innerHTML = agentIdeas.map((idea, i) => {
+    const statusColors = {
+      '💡 アイデア': { bg: '#292524', color: '#a8a29e', border: '#3a3533' },
+      '🔧 検討中':   { bg: '#1c3327', color: '#34d399', border: '#1f4a38' },
+      '✅ 完成':     { bg: '#1a2e1a', color: '#4ade80', border: '#14532d' },
+    }
+    const sc = statusColors[idea.status] || statusColors['💡 アイデア']
+    return `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:5px;background:${sc.bg};border:1px solid ${sc.border};border-radius:4px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;color:#d4d4d4;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${idea.text}</div>
+          <div style="font-size:9px;color:#57534e;margin-top:2px;">${idea.date}</div>
+        </div>
+        <select onchange="updateIdeaStatus(${i}, this.value)" style="font-size:9px;background:#3a3533;border:none;color:${sc.color};border-radius:3px;padding:2px 4px;cursor:pointer;font-family:inherit;">
+          ${IDEA_STATUSES.map(s => `<option value="${s}" ${s === idea.status ? 'selected' : ''}>${s}</option>`).join('')}
+        </select>
+        <button onclick="deleteAgentIdea(${i})" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#52525b'">✕</button>
+      </div>`
+  }).join('')
+}
+
+function addAgentIdea() {
+  document.getElementById('agent-idea-form').style.display = 'block'
+  document.getElementById('agent-idea-input').focus()
+}
+
+function saveAgentIdea() {
+  const input = document.getElementById('agent-idea-input')
+  const text = input.value.trim()
+  if (!text) return
+  agentIdeas.unshift({
+    text,
+    status: '💡 アイデア',
+    date: new Date().toLocaleDateString('ja-JP', { month:'numeric', day:'numeric' })
+  })
+  input.value = ''
+  document.getElementById('agent-idea-form').style.display = 'none'
+  saveAgentIdeas()
+  renderAgentIdeas()
+}
+
+function cancelAgentIdea() {
+  document.getElementById('agent-idea-input').value = ''
+  document.getElementById('agent-idea-form').style.display = 'none'
+}
+
+function updateIdeaStatus(i, status) {
+  agentIdeas[i].status = status
+  saveAgentIdeas()
+  renderAgentIdeas()
+}
+
+function deleteAgentIdea(i) {
+  agentIdeas.splice(i, 1)
+  saveAgentIdeas()
+  renderAgentIdeas()
+}
+
+// Enterキーで保存
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.id === 'agent-idea-input') saveAgentIdea()
+})
+
+// 初期描画
+renderAgentIdeas()
+
+// Last checked
+document.getElementById('last-checked').textContent =
+  '最終確認: ' + new Date().toLocaleTimeString('ja-JP', { hour:'2-digit', minute:'2-digit' })
+
+// ── RFP 想定問答集（Claude.ai起動方式） ──
+function launchRfpQA() {
+  const stance = document.querySelector('.persona-btn.selected')?.textContent || '提案側（GMO）'
+  const focus  = document.getElementById('rfp-focus').value.trim()
+  const memo   = document.getElementById('rfp-memo').value.trim()
+
+  const focusLine = focus ? `\n重点領域：${focus}` : ''
+  const memoLine  = memo  ? `\n\nRFPの要点：\n${memo}` : ''
+
+  const prompt = `あなたは営業提案の専門家です。添付するRFPを読み、お客様との打ち合わせで想定される質問と模範回答を8〜10件作成してください。
+
+立場：${stance}${focusLine}${memoLine}
+
+【出力形式】
+カテゴリ（体制・実績 / 技術・品質 / コスト・納期 / リスク・懸念 / Migratyなど）ごとに分類し、Q&A形式で出力してください。${memo ? '' : '\n\nRFPファイルをこのチャットにアップロードしてから送信してください。'}`
+
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(prompt)}`, '_blank')
+}
+
+// ── ベトナム視察タブ切り替え ──
+function switchVietnamTab(tab) {
+  const hanoi  = document.getElementById('vietnam-hanoi')
+  const danang = document.getElementById('vietnam-danang')
+  const tabH   = document.getElementById('tab-hanoi')
+  const tabD   = document.getElementById('tab-danang')
+  if (tab === 'hanoi') {
+    hanoi.style.display  = 'block'
+    danang.style.display = 'none'
+    tabH.style.background = '#1c1917'; tabH.style.color = '#fef3c7'
+    tabD.style.background = '#fafaf8'; tabD.style.color = '#78716c'
+  } else {
+    hanoi.style.display  = 'none'
+    danang.style.display = 'block'
+    tabH.style.background = '#fafaf8'; tabH.style.color = '#78716c'
+    tabD.style.background = '#1c1917'; tabD.style.color = '#fef3c7'
+  }
+}
+
+// Research
+function startResearch() {
+  const name = document.getElementById('research-name').value.trim()
+  const company = document.getElementById('research-company').value.trim()
+  if (!name || !company) { alert('氏名と会社名を入力してください'); return }
+
+  // ① SNS検索（Google経由）
+  const snsQ = encodeURIComponent(`${name} ${company} site:linkedin.com OR site:x.com OR site:facebook.com`)
+  window.open(`https://www.google.com/search?q=${snsQ}`, '_blank')
+
+  // ② 商談メモ検索（Google Drive 2フォルダ）
+  const driveQ = encodeURIComponent(`${name} ${company}`)
+  setTimeout(() => {
+    window.open(`https://drive.google.com/drive/folders/1VaGV5Hfm0HwArcdGatLEOd_iwq61V0Ha/search?q=${driveQ}`, '_blank')
+  }, 300)
+  setTimeout(() => {
+    window.open(`https://drive.google.com/drive/folders/1Haa1ilrql17oPJ_OEpbOkDwwgtZsJUIO/search?q=${driveQ}`, '_blank')
+  }, 600)
+}
+
+// 商談メモ検索（Google Drive）
+async function searchMemos() {
+  const name    = document.getElementById('research-name').value.trim()
+  const company = document.getElementById('research-company').value.trim()
+  const results = document.getElementById('memo-results')
+  const btn     = document.getElementById('memo-search-btn')
+
+  if (!name && !company) {
+    results.innerHTML = '<span style="color:#e85d04">氏名または会社名を入力してください。</span>'
+    return
+  }
+
+  btn.textContent = '検索中…'
+  btn.disabled = true
+  results.innerHTML = '<span style="color:#a8a29e">🔄 Google Drive を検索中...</span>'
+
+  try {
+    // Google Drive 検索URL（ブラウザで開く）
+    const query = [name, company].filter(Boolean).join(' ')
+    const driveSearchUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(query)}`
+
+    // Anthropic APIで過去メモのサマリーを生成
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        messages: [{
+          role: 'user',
+          content: `営業担当として、以下の人物との商談前に確認すべきことをまとめてください。
+
+対象: ${name}（${company}）
+
+以下の形式でJSONのみ返してください（マークダウン不要）:
+{
+  "lastContact": "最終接触時期の推定（不明の場合は「記録なし」）",
+  "keyPoints": ["過去商談で重要だった可能性のあるポイント（3点）"],
+  "nextActions": ["次回打ち合わせで確認すべきこと（2点）"],
+  "driveUrl": "${driveSearchUrl}"
+}`
+        }]
+      })
+    })
+
+    const data = await res.json()
+    const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || ''
+    const clean = text.replace(/\`\`\`json|\`\`\`/g, '').trim()
+    const memo = JSON.parse(clean)
+
+    results.innerHTML = `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:4px;">🕐 最終接触</div>
+        <div style="font-size:12px;color:#292524;">${memo.lastContact}</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:6px;">📌 過去の重要ポイント</div>
+        ${memo.keyPoints.map(p => `<div style="display:flex;gap:6px;margin-bottom:4px;font-size:12px;color:#292524;"><span style="color:#e85d04;flex-shrink:0;">▸</span>${p}</div>`).join('')}
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:6px;">✅ 次回確認事項</div>
+        ${memo.nextActions.map(a => `<div style="display:flex;gap:6px;margin-bottom:4px;font-size:12px;color:#292524;"><span style="color:#16a34a;flex-shrink:0;">▸</span>${a}</div>`).join('')}
+      </div>
+      <a href="${memo.driveUrl}" target="_blank" style="display:inline-block;font-size:11px;font-weight:700;color:#0f1f3d;text-decoration:none;padding:5px 12px;background:#e8edf5;border-radius:3px;">
+        📂 Drive で商談メモを検索 ↗
+      </a>
+    `
+  } catch(e) {
+    // APIキー未設定の場合はDrive検索リンクのみ表示
+    const query = [name, company].filter(Boolean).join(' ')
+    const driveSearchUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(query)}`
+    results.innerHTML = `
+      <div style="margin-bottom:10px;font-size:12px;color:#292524;">
+        Google Drive で <strong>${name} ${company}</strong> に関するファイルを検索します。
+      </div>
+      <a href="${driveSearchUrl}" target="_blank" style="display:inline-block;font-size:11px;font-weight:700;color:#0f1f3d;text-decoration:none;padding:5px 12px;background:#e8edf5;border-radius:3px;">
+        📂 Drive で商談メモを開く ↗
+      </a>
+    `
+  } finally {
+    btn.textContent = '検索'
+    btn.disabled = false
+  }
+}
+
+// ── ベトナム視察テンプレート生成 ──
+const VISIT_TEMPLATES = {
+  tech: {
+    label: '技術確認',
+    agenda: [
+      '1. 開発体制・チーム構成の確認（人数・スキルセット・稼働状況）',
+      '2. 現在の開発プロセス・品質管理フロー見学',
+      '3. Migraty活用状況・AIツール導入状況のヒアリング',
+      '4. 課題・ボトルネックのヒアリング（PM・TLレベル）',
+      '5. 今後の体制強化・採用計画の確認',
+    ],
+    checkpoints: [
+      '✅ コードレビュー体制は整っているか',
+      '✅ テスト自動化の状況',
+      '✅ 日本語コミュニケーション対応可能なメンバー数',
+      '✅ 残業・稼働状況（バッファの有無）',
+    ],
+  },
+  sales: {
+    label: '顧客同行',
+    agenda: [
+      '1. 訪問前ブリーフィング（顧客背景・課題おさらい）',
+      '2. 顧客への会社紹介・ベトナム拠点説明',
+      '3. 技術デモ・実績紹介（Migraty / オフショア実績）',
+      '4. 顧客課題ヒアリング・要件深掘り',
+      '5. 次ステップ合意・フォローアップ事項整理',
+    ],
+    checkpoints: [
+      '✅ 顧客の意思決定者は同席するか',
+      '✅ 日本語通訳・BrSE対応の確認',
+      '✅ デモ環境・資料の事前準備',
+      '✅ 提案書・見積書の持参有無',
+    ],
+  },
+  migration: {
+    label: 'マイグレーション確認',
+    agenda: [
+      '1. 対象システムの現状ヒアリング（言語・規模・構成）',
+      '2. Migraty AIアセスメント結果レビュー',
+      '3. 移行フェーズ・スケジュール確認',
+      '4. リスク・懸念事項の整理',
+      '5. PoC実施可否・次フェーズ合意',
+    ],
+    checkpoints: [
+      '✅ ソースコード・仕様書の入手状況',
+      '✅ テスト環境の準備状況',
+      '✅ 顧客側の受け入れ体制',
+      '✅ Oracle / COBOL / Notes 対応可能なエンジニアのアサイン状況',
+    ],
+  },
+  onboarding: {
+    label: '新規メンバー顔合わせ',
+    agenda: [
+      '1. メンバー自己紹介・バックグラウンド共有',
+      '2. プロジェクト概要・目標の説明',
+      '3. 役割分担・期待値のすり合わせ',
+      '4. コミュニケーションルール・ツール確認',
+      '5. 今後のスケジュール・マイルストーン共有',
+    ],
+    checkpoints: [
+      '✅ Slack / チャットツールのアカウント設定済みか',
+      '✅ 日本語レベルの確認',
+      '✅ 開発環境セットアップ状況',
+      '✅ 直近1ヶ月のタスク割り振り',
+    ],
+  },
+}
+
+function generateVisitTemplate() {
+  const typeEl = document.querySelector('input[name="visit-type"]:checked')
+  const project = document.getElementById('visit-project').value.trim()
+  const result = document.getElementById('visit-result')
+
+  if (!typeEl) {
+    alert('視察タイプを選択してください')
+    return
+  }
+
+  const t = VISIT_TEMPLATES[typeEl.value]
+  const projectLine = project ? `📌 案件：${project}\n` : ''
+
+  result.style.display = 'block'
+  result.innerHTML = `
+    <div style="font-weight:700;color:#0f1f3d;margin-bottom:10px;font-size:13px;">
+      ✈️ ${t.label} 視察テンプレート${project ? '　—　' + project : ''}
+    </div>
+    <div style="font-size:10px;font-weight:700;color:#78716c;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">アジェンダ</div>
+    ${t.agenda.map(a => `<div style="padding:5px 0;border-bottom:1px solid #f0ede8;font-size:12px;color:#292524;">${a}</div>`).join('')}
+    <div style="font-size:10px;font-weight:700;color:#78716c;letter-spacing:0.06em;text-transform:uppercase;margin:12px 0 6px;">確認チェックリスト</div>
+    ${t.checkpoints.map(c => `<div style="padding:4px 0;font-size:12px;color:#292524;">${c}</div>`).join('')}
+    <button onclick="copyTemplate()" style="margin-top:12px;padding:6px 14px;background:#0f1f3d;color:#c8d8f0;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.05em;">📋 コピー</button>
+  `
+}
+
+function copyTemplate() {
+  const typeEl = document.querySelector('input[name="visit-type"]:checked')
+  const project = document.getElementById('visit-project').value.trim()
+  if (!typeEl) return
+  const t = VISIT_TEMPLATES[typeEl.value]
+  const text = [
+    `【${t.label}視察テンプレート】${project ? ' / ' + project : ''}`,
+    '',
+    '■ アジェンダ',
+    ...t.agenda,
+    '',
+    '■ 確認チェックリスト',
+    ...t.checkpoints,
+  ].join('\n')
+  navigator.clipboard.writeText(text).then(() => alert('クリップボードにコピーしました！'))
+}
+</script>
+</body>
+</html>
