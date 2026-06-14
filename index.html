@@ -535,13 +535,7 @@ const BADGE_COLORS = {
   'その他': {bg:'#1a3c8f12',color:'#1a3c8f'},
 }
 
-let driveLinks = JSON.parse(localStorage.getItem('driveLinks') || 'null')
-// 商談メモが含まれていた古いキャッシュをリセット
-if (driveLinks && driveLinks.some(l => l.label && l.label.includes('商談メモ'))) {
-  localStorage.removeItem('driveLinks')
-  driveLinks = null
-}
-driveLinks = driveLinks || [
+let driveLinks = JSON.parse(localStorage.getItem('driveLinks') || 'null') || [
   { id:1, icon:'✍️', label:'GMO サイン', url:'https://gmosign.com/', cat:'ツール' },
   { id:2, icon:'⭐', label:'X ポイント', url:'https://xpoint.jp/', cat:'ツール' },
   { id:3, icon:'📊', label:'Migraty 提案資料', url:'#', cat:'提案' },
@@ -812,78 +806,6 @@ function startResearch() {
   }, 800)
 }
 
-
-  btn.textContent = '検索中…'
-  btn.disabled = true
-  results.innerHTML = '<span style="color:#a8a29e">🔄 Google Drive を検索中...</span>'
-
-  try {
-    // Google Drive 検索URL（ブラウザで開く）
-    const query = [name, company].filter(Boolean).join(' ')
-    const driveSearchUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(query)}`
-
-    // Anthropic APIで過去メモのサマリーを生成
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 800,
-        messages: [{
-          role: 'user',
-          content: `営業担当として、以下の人物との商談前に確認すべきことをまとめてください。
-
-対象: ${name}（${company}）
-
-以下の形式でJSONのみ返してください（マークダウン不要）:
-{
-  "lastContact": "最終接触時期の推定（不明の場合は「記録なし」）",
-  "keyPoints": ["過去商談で重要だった可能性のあるポイント（3点）"],
-  "nextActions": ["次回打ち合わせで確認すべきこと（2点）"],
-  "driveUrl": "${driveSearchUrl}"
-}`
-        }]
-      })
-    })
-
-    const data = await res.json()
-    const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || ''
-    const clean = text.replace(/\`\`\`json|\`\`\`/g, '').trim()
-    const memo = JSON.parse(clean)
-
-    results.innerHTML = `
-      <div style="margin-bottom:10px;">
-        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:4px;">🕐 最終接触</div>
-        <div style="font-size:12px;color:#292524;">${memo.lastContact}</div>
-      </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:6px;">📌 過去の重要ポイント</div>
-        ${memo.keyPoints.map(p => `<div style="display:flex;gap:6px;margin-bottom:4px;font-size:12px;color:#292524;"><span style="color:#e85d04;flex-shrink:0;">▸</span>${p}</div>`).join('')}
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:10px;color:#78716c;font-weight:700;margin-bottom:6px;">✅ 次回確認事項</div>
-        ${memo.nextActions.map(a => `<div style="display:flex;gap:6px;margin-bottom:4px;font-size:12px;color:#292524;"><span style="color:#16a34a;flex-shrink:0;">▸</span>${a}</div>`).join('')}
-      </div>
-      <a href="${memo.driveUrl}" target="_blank" style="display:inline-block;font-size:11px;font-weight:700;color:#0f1f3d;text-decoration:none;padding:5px 12px;background:#e8edf5;border-radius:3px;">
-        📂 Drive で商談メモを検索 ↗
-      </a>
-    `
-  } catch(e) {
-    // APIキー未設定の場合はDrive検索リンクのみ表示
-    const query = [name, company].filter(Boolean).join(' ')
-    const driveSearchUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(query)}`
-    results.innerHTML = `
-      <div style="margin-bottom:10px;font-size:12px;color:#292524;">
-        Google Drive で <strong>${name} ${company}</strong> に関するファイルを検索します。
-      </div>
-      <a href="${driveSearchUrl}" target="_blank" style="display:inline-block;font-size:11px;font-weight:700;color:#0f1f3d;text-decoration:none;padding:5px 12px;background:#e8edf5;border-radius:3px;">
-        📂 Drive で商談メモを開く ↗
-      </a>
-    `
-  } finally {
-    btn.textContent = '検索'
-    btn.disabled = false
-  }
 }
 
 // ── ベトナム視察テンプレート生成 ──
