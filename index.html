@@ -67,6 +67,7 @@ body {
   padding: 28px 40px 40px;
   max-width: 1200px;
   margin: 0 auto;
+  align-items: stretch;
 }
 
 /* ── Card ── */
@@ -76,11 +77,20 @@ body {
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
   transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 .card:hover {
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
+.card-body {
+  padding: 20px 20px 18px;
+  flex: 1;
+}
+
+
+/* ── Card head ── */
 .card-head {
   background: #0f1f3d;
   padding: 14px 18px;
