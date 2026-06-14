@@ -301,13 +301,8 @@ body {
 <body>
 
 <header class="header">
-  <div class="logo">
-    <a href="https://gmorunsystem.co.jp/" target="_blank" style="text-decoration:none;display:flex;align-items:center;">
-      <span style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-size:26px;font-weight:900;color:#1a3c8f;letter-spacing:-0.5px;">GMO</span><span style="font-family:'Arial','Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:400;color:#6b7280;letter-spacing:2px;">RUNSYSTEM</span>
-    </a>
-  </div>
-  <div class="header-text">
-    <div class="sub">営業支援ダッシュボード</div>
+  <div style="display:flex;align-items:center;gap:0;">
+    <span style="font-family:'Noto Sans JP','Hiragino Sans',sans-serif;font-size:22px;font-weight:700;color:#1c1917;letter-spacing:0.02em;">営業支援ダッシュボード</span>
   </div>
   <div class="header-right">
     <div class="date" id="date-str"></div>
@@ -340,12 +335,15 @@ body {
     <div class="card-body">
       <input class="input-field" id="research-name" placeholder="氏名（例：山田 太郎）" />
       <input class="input-field" id="research-company" placeholder="会社名（例：NSD 株式会社）" />
-      <button class="research-btn" onclick="startResearch()">🔍 &nbsp;リサーチ開始</button>
+
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="research-btn" style="flex:1;" onclick="startResearchClaude()">✦ &nbsp;Claudeを開く</button>
+        <button class="research-btn" style="flex:1;background:#f4f2ee;color:#1c1917;border:1px solid #e7e5e4;" onclick="startResearchWeb()">🌐 &nbsp;Webを開く</button>
+      </div>
 
       <div style="margin-top:14px;padding:12px 14px;background:#faf8f5;border-left:3px solid #e7e5e4;font-size:11px;color:#a8a29e;line-height:1.8;">
-        ① <strong style="color:#292524;">Claude.ai</strong> が開き、SNS（LinkedIn・X・Facebook）を調べてサマリーを生成<br>
-        ② <strong style="color:#292524;">商談メモ</strong> フォルダ①②を同時に開きます<br>
-        <span style="color:#c4bfb8;">→ 合計3タブが開きます</span>
+        <strong style="color:#292524;">Claude</strong>：SNSサマリー生成 ＋ 商談メモ2フォルダ（計3タブ）<br>
+        <strong style="color:#292524;">Web</strong>：LinkedIn・X・Facebook をGoogle検索で開く
       </div>
     </div>
   </div>
@@ -393,13 +391,13 @@ body {
       <div style="margin-top:18px;border-top:1px solid #3a3533;padding-top:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div style="font-size:10px;font-weight:700;color:#57534e;letter-spacing:0.08em;text-transform:uppercase;">💡 作成候補エージェント</div>
-          <button onclick="addAgentIdea()" style="background:#3a3533;border:none;color:#a8a29e;font-size:11px;padding:3px 10px;border-radius:3px;cursor:pointer;font-family:inherit;">＋ 追加</button>
+          <button onclick="addAgentIdea()" style="background:#34d39922;border:1px solid #34d39944;color:#34d399;font-size:11px;padding:3px 10px;border-radius:3px;cursor:pointer;font-family:inherit;font-weight:600;">＋ 候補追加</button>
         </div>
         <div id="agent-ideas-list"></div>
         <div id="agent-idea-form" style="display:none;margin-top:8px;">
           <input id="agent-idea-input" placeholder="例：Slack未読アラートエージェント" style="width:100%;background:#292524;border:1px solid #52525b;border-radius:3px;color:#d4d4d4;font-size:12px;padding:8px 10px;outline:none;font-family:inherit;margin-bottom:6px;">
           <div style="display:flex;gap:6px;">
-            <button onclick="saveAgentIdea()" style="flex:1;padding:7px;background:#34d399;color:#064e3b;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">保存</button>
+            <button onclick="saveAgentIdea()" style="flex:1;padding:7px;background:#34d399;color:#064e3b;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;" id="agent-idea-save-btn">保存</button>
             <button onclick="cancelAgentIdea()" style="flex:1;padding:7px;background:#3a3533;color:#78716c;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">キャンセル</button>
           </div>
         </div>
@@ -692,25 +690,50 @@ function renderAgentIdeas() {
         <select onchange="updateIdeaStatus(${i}, this.value)" style="font-size:9px;background:#3a3533;border:none;color:${sc.color};border-radius:3px;padding:2px 4px;cursor:pointer;font-family:inherit;">
           ${IDEA_STATUSES.map(s => `<option value="${s}" ${s === idea.status ? 'selected' : ''}>${s}</option>`).join('')}
         </select>
+        <button onclick="editAgentIdea(${i})" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='#34d399'" onmouseout="this.style.color='#52525b'">✏️</button>
         <button onclick="deleteAgentIdea(${i})" style="background:none;border:none;color:#52525b;cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#52525b'">✕</button>
       </div>`
   }).join('')
 }
 
+let editingIdeaIndex = null
+
 function addAgentIdea() {
+  editingIdeaIndex = null
+  const saveBtn = document.getElementById('agent-idea-save-btn')
+  if (saveBtn) saveBtn.textContent = '保存'
+  document.getElementById('agent-idea-input').value = ''
   document.getElementById('agent-idea-form').style.display = 'block'
   document.getElementById('agent-idea-input').focus()
+}
+
+function editAgentIdea(i) {
+  editingIdeaIndex = i
+  const input = document.getElementById('agent-idea-input')
+  input.value = agentIdeas[i].text
+  const saveBtn = document.getElementById('agent-idea-save-btn')
+  if (saveBtn) saveBtn.textContent = '更新'
+  document.getElementById('agent-idea-form').style.display = 'block'
+  input.focus()
 }
 
 function saveAgentIdea() {
   const input = document.getElementById('agent-idea-input')
   const text = input.value.trim()
   if (!text) return
-  agentIdeas.unshift({
-    text,
-    status: '💡 アイデア',
-    date: new Date().toLocaleDateString('ja-JP', { month:'numeric', day:'numeric' })
-  })
+
+  if (editingIdeaIndex !== null) {
+    // 編集モード：既存アイテムを更新
+    agentIdeas[editingIdeaIndex].text = text
+    editingIdeaIndex = null
+  } else {
+    // 新規追加
+    agentIdeas.unshift({
+      text,
+      status: '💡 アイデア',
+      date: new Date().toLocaleDateString('ja-JP', { month:'numeric', day:'numeric' })
+    })
+  }
   input.value = ''
   document.getElementById('agent-idea-form').style.display = 'none'
   saveAgentIdeas()
@@ -718,6 +741,7 @@ function saveAgentIdea() {
 }
 
 function cancelAgentIdea() {
+  editingIdeaIndex = null
   document.getElementById('agent-idea-input').value = ''
   document.getElementById('agent-idea-form').style.display = 'none'
 }
@@ -785,27 +809,38 @@ function switchVietnamTab(tab) {
 }
 
 // ── 人物リサーチ（Claude.ai + Drive方式） ──
-function startResearch() {
+function startResearchClaude() {
   const name    = document.getElementById('research-name').value.trim()
   const company = document.getElementById('research-company').value.trim()
   if (!name || !company) { alert('氏名と会社名を入力してください'); return }
 
-  // ① Claude.aiをプロンプト付きで開く（SNSサマリー生成）
   const prompt = encodeURIComponent(
     `【人物リサーチ】打ち合わせ前の事前調査をお願いします。\n\n対象：${name}（${company}）\n\n以下を調べてまとめてください：\n1. LinkedIn プロフィール（役職・経歴・スキル）\n2. X（Twitter）の発信傾向・関心トピック\n3. Facebook の公開情報\n4. その他Web上の登壇・インタビュー・記事情報\n\n【出力形式】\n■ プロフィール概要\n■ SNS別サマリー（LinkedIn / X / Facebook）\n■ 打ち合わせで使えるトークポイント（3つ）\n■ 注意点・NG話題`
   )
   window.open(`https://claude.ai/new?q=${prompt}`, '_blank')
 
-  // ② 商談メモ フォルダ① を開く
   const driveQ = encodeURIComponent(`${name} ${company}`)
   setTimeout(() => {
     window.open(`https://drive.google.com/drive/folders/1VaGV5Hfm0HwArcdGatLEOd_iwq61V0Ha/search?q=${driveQ}`, '_blank')
   }, 400)
-
-  // ③ 商談メモ フォルダ② を開く
   setTimeout(() => {
     window.open(`https://drive.google.com/drive/folders/1Haa1ilrql17oPJ_OEpbOkDwwgtZsJUIO/search?q=${driveQ}`, '_blank')
   }, 800)
+}
+
+function startResearchWeb() {
+  const name    = document.getElementById('research-name').value.trim()
+  const company = document.getElementById('research-company').value.trim()
+  if (!name || !company) { alert('氏名と会社名を入力してください'); return }
+
+  const q = encodeURIComponent(`${name} ${company}`)
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(`${name} ${company} site:linkedin.com`)}`, '_blank')
+  setTimeout(() => {
+    window.open(`https://x.com/search?q=${q}`, '_blank')
+  }, 300)
+  setTimeout(() => {
+    window.open(`https://www.facebook.com/search/people/?q=${q}`, '_blank')
+  }, 600)
 }
 
 // ── ベトナム視察テンプレート生成 ──
